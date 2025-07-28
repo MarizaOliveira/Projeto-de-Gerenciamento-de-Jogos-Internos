@@ -36,16 +36,13 @@ public class EquipeController {
     @GetMapping
     public ResponseEntity<List<EquipeDTO>> listarEquipes() {
         List<Equipe> equipes = equipeService.listarTodas();
-        // Precisamos de um método para converter a lista de Entidades para uma lista de DTOs
-        // Vamos criar um método auxiliar para isso
         List<EquipeDTO> dtoList = equipes.stream().map(this::mapEquipeToDTO).collect(Collectors.toList());
         return ResponseEntity.ok(dtoList);
     }
 
-    // --- NOVO MÉTODO AUXILIAR ABAIXO ---
+    //metodo auxiliar
     private EquipeDTO mapEquipeToDTO(Equipe equipe) {
-        // Esta lógica de mapeamento já está no seu EquipeServiceImpl,
-        // o ideal seria movê-la para um "Mapper" dedicado, mas por simplicidade, podemos replicá-la aqui.
+        // Esta lógica de mapeamento já está no EquipeServiceImpl,
         EquipeDTO dto = new EquipeDTO();
         dto.setIdEquipe(equipe.getIdEquipe());
         dto.setNome(equipe.getNome());
@@ -58,7 +55,7 @@ public class EquipeController {
                 dto.setNomeCampus(equipe.getCurso().getCampus().getNome());
             }
         }
-        // Mapeamento do técnico e da lista de atletas seria mais complexo e pode ser adicionado depois
+        // Mapeamento do técnico e da lista de atletas seria maior, por enquanto deixa sem ele;
         return dto;
     }
 
