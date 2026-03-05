@@ -2,6 +2,7 @@ package com.projeto_web1.jogos_internos.controller;
 
 import com.projeto_web1.jogos_internos.service.user.UserService;
 import com.projeto_web1.jogos_internos.service.user.dto.UserDTO;
+import com.projeto_web1.jogos_internos.service.user.form.LoginForm;
 import com.projeto_web1.jogos_internos.service.user.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController // Avisa ao Spring que esta classe é um Controller REST.
+@CrossOrigin(origins = "*")
 @RequestMapping("/usuarios") // Define que todos os endpoints nesta classe começarão com /usuarios.
 public class UsuarioController {
 
@@ -27,6 +29,12 @@ public class UsuarioController {
 
         // Retorna o status 201 Created com a URI e o corpo da resposta
         return ResponseEntity.created(uri).body(userDTO);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserDTO> login(@RequestBody LoginForm form) {
+        UserDTO userDTO = userService.login(form);
+        return ResponseEntity.ok(userDTO);
     }
 
 

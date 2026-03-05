@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-// Substituímos @Data por anotações mais específicas
+// Substituí @Data por anotações mais específicas (OBS: estava dando loop o @Data)
 @Getter
 @Setter
 @NoArgsConstructor

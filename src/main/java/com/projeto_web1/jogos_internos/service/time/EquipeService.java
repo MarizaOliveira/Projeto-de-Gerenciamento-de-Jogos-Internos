@@ -11,4 +11,8 @@ public interface EquipeService {
     EquipeDTO criarEquipe(EquipeForm form);
 
     List<Equipe> listarTodas();
+
+    EquipeDTO atualizar(Long id, EquipeForm form);
+
+    void deletar(Long id);
 }

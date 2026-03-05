@@ -10,4 +10,6 @@ public class CursoDTO {
     private String nomeCampus;
     private String nomeCoordenador;
 
+    private Long idCoordenador;
+
 }

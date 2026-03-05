@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class CoordenadorServiceImpl implements CoordenadorService {
 
@@ -87,5 +89,11 @@ public class CoordenadorServiceImpl implements CoordenadorService {
     public Coordenador buscarPorId(Long id) {
         return coordenadorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Coordenador não encontrado com o ID: " + id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Coordenador> listarTodos() {
+        return coordenadorRepository.findAll();
     }
 }

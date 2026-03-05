@@ -2,6 +2,7 @@ package com.projeto_web1.jogos_internos.service.atleta.impl;
 
 import com.projeto_web1.jogos_internos.model.Atleta;
 import com.projeto_web1.jogos_internos.repository.AtletaRepository;
+import com.projeto_web1.jogos_internos.repository.CursoRepository;
 import com.projeto_web1.jogos_internos.repository.EquipeRepository;
 import com.projeto_web1.jogos_internos.repository.UsuarioRepository;
 import com.projeto_web1.jogos_internos.service.atleta.AtletaService;
@@ -23,6 +24,7 @@ public class AtletaServiceImpl implements AtletaService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
 
     // READ (Listar todos)
     @Override
@@ -76,4 +78,14 @@ public class AtletaServiceImpl implements AtletaService {
 
 
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Atleta> listarPorCurso(Long idCurso) {
+        return atletaRepository.findByCursoIdCurso(idCurso);
+    }
+
+
+
+
 }

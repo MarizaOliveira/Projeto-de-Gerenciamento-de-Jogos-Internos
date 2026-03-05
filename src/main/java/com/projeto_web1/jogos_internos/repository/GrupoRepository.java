@@ -14,7 +14,6 @@ public interface GrupoRepository extends JpaRepository<Grupo, Long> {
     @Query("SELECT DISTINCT g FROM Grupo g JOIN g.equipes e WHERE e.evento.idEvento = :eventoId AND e.esporte.idEsporte = :esporteId")
     List<Grupo> findGruposByEventoAndEsporte(@Param("eventoId") Long eventoId, @Param("esporteId") Long esporteId);
 
-
     void deleteAllByIdGrupoIn(List<Long> ids);
 
 

@@ -1,8 +1,11 @@
 package com.projeto_web1.jogos_internos.controller;
 
+import com.projeto_web1.jogos_internos.model.Atleta;
 import com.projeto_web1.jogos_internos.model.Campus;
 import com.projeto_web1.jogos_internos.model.Coordenador;
 import com.projeto_web1.jogos_internos.model.Curso;
+import com.projeto_web1.jogos_internos.service.atleta.AtletaService;
+import com.projeto_web1.jogos_internos.service.atleta.dto.AtletaDTO;
 import com.projeto_web1.jogos_internos.service.campus.CampusService;
 import com.projeto_web1.jogos_internos.service.coordenador.CoordenadorService;
 import com.projeto_web1.jogos_internos.service.curso.CursoService;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/cursos")
 public class CursoController {
 
@@ -29,6 +33,9 @@ public class CursoController {
 
     @Autowired
     private CoordenadorService coordenadorService; // Necessário para buscar o Coordenador
+
+    @Autowired
+    private AtletaService atletaService;
 
     // CREATE
     @PostMapping
@@ -58,6 +65,29 @@ public class CursoController {
         List<CursoDTO> dtoList = cursos.stream().map(this::mapToDTO).collect(Collectors.toList());
         return ResponseEntity.ok(dtoList);
     }
+
+    @GetMapping("/{id}/atletas")
+    public ResponseEntity<List<AtletaDTO>> listarAtletasPorCurso(@PathVariable Long id) {
+        List<Atleta> atletas = atletaService.listarPorCurso(id);
+        List<AtletaDTO> dtoList = atletas.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
+    }
+
+    private AtletaDTO mapToDTO(Atleta atleta) {
+        AtletaDTO dto = new AtletaDTO();
+        dto.setIdAtleta(atleta.getIdAtleta());
+        dto.setMatricula(atleta.getUsuario().getMatricula());
+        dto.setEmail(atleta.getUsuario().getEmail());
+        dto.setNomeCompleto(atleta.getNomeCompleto());
+        dto.setApelido(atleta.getApelido());
+        dto.setTelefone(atleta.getTelefone());
+        dto.setNomeCurso(atleta.getCurso().getNome());
+        dto.setTecnicoHabilitado(atleta.getTecnicoHabilitado());
+        return dto;
+    }
+
 
     // READ (Buscar por ID)
     @GetMapping("/{id}")
@@ -98,5 +128,14 @@ public class CursoController {
         dto.setNomeCampus(curso.getCampus().getNome());
         dto.setNomeCoordenador(curso.getCoordenador().getNomeCompleto());
         return dto;
+    }
+
+    // Dentro da classe CursoController.java
+
+    @GetMapping("/campus/{idCampus}")
+    public ResponseEntity<List<CursoDTO>> listarCursosPorCampus(@PathVariable Long idCampus) {
+        List<Curso> cursos = cursoService.listarPorCampus(idCampus);
+        List<CursoDTO> dtoList = cursos.stream().map(this::mapToDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 }

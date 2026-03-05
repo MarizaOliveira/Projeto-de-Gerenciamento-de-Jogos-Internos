@@ -9,6 +9,7 @@ import com.projeto_web1.jogos_internos.repository.JogoRepository;
 import com.projeto_web1.jogos_internos.service.torneio.TorneioService;
 
 import com.projeto_web1.jogos_internos.service.torneio.dto.ClassificadoPair;
+import com.projeto_web1.jogos_internos.service.torneio.dto.GrupoDTO;
 import com.projeto_web1.jogos_internos.service.torneio.dto.TimeClassificacaoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -248,6 +249,11 @@ public class TorneioServiceImpl implements TorneioService {
     @Override
     @Transactional
     public void gerarQuartasDeFinal(Long eventoId, Long esporteId) {
+        boolean existemJogosAgendados = jogoRepository.existsAgendadoInFaseDeGrupos(eventoId, esporteId);
+
+        if (existemJogosAgendados) {
+            throw new IllegalStateException("Não é possível gerar as quartas de final. Todos os jogos da fase de grupos precisam de ter um resultado registado.");
+        }
         // Coletar e Ranquer TODOS os Classificados
         List<Grupo> gruposDoTorneio = grupoRepository.findGruposByEventoAndEsporte(eventoId, esporteId);
         if (gruposDoTorneio.isEmpty()) {
@@ -333,6 +339,7 @@ public class TorneioServiceImpl implements TorneioService {
             Equipe eq_1_2 = equipeRepository.findById(par1.getSegundoColocado().getEquipeId()).orElseThrow();
             jogosMataMata.add(criarJogoMataMata(eq_2_1, eq_1_2, "SEMIFINAL", null, jogosMataMata.size()));
 
+            // Caso de 1 grupo/ 2 classificados ( direto na final)
         }  else if (totalClassificados == 2) {
             // Lógica para 2 times (Final Direta)
             System.out.println("Apenas 2 equipes classificadas. Gerando a FINAL diretamente...");
@@ -495,6 +502,24 @@ public class TorneioServiceImpl implements TorneioService {
         // Se chegou aqui, é um empate em fase de grupos ou um erro.
         // Como o método é usado no mata-mata, lançamos um erro.
         throw new IllegalStateException("Não foi possível determinar o vencedor do jogo de mata-mata: " + jogo.getIdJogo());
+    }
+
+
+    // ===================================================
+    // NOVO MÉTODO ADICIONADO
+    // ===================================================
+    @Override
+    @Transactional(readOnly = true)
+    public List<GrupoDTO> listarGrupos(Long eventoId, Long esporteId) {
+        List<Grupo> grupos = grupoRepository.findGruposByEventoAndEsporte(eventoId, esporteId);
+
+        // Mapeia a lista de entidades Grupo para uma lista de GrupoDTO
+        return grupos.stream().map(grupo -> {
+            GrupoDTO dto = new GrupoDTO();
+            dto.setIdGrupo(grupo.getIdGrupo());
+            dto.setNome(grupo.getNome());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
 

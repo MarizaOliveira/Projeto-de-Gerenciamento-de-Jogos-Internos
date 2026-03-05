@@ -16,4 +16,9 @@ public interface AtletaService {
 
     // DELETE
     void deletar(Long id);
+
+    List<Atleta> listarPorCurso(Long idCurso);
+
+
+
 }

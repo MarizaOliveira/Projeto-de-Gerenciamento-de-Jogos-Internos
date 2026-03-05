@@ -19,4 +19,7 @@ public interface CursoService {
 
     // DELETE
     void deletar(Long id);
+
+    List<Curso> listarPorCampus(Long idCampus);
+
 }

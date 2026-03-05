@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class JogoServiceImpl implements JogoService {
 
@@ -137,6 +139,14 @@ public class JogoServiceImpl implements JogoService {
 
         //Salva o jogo com o estado revertido
         jogoRepository.save(jogo);
+    }
+
+    // ===================================================
+    @Override
+    @Transactional(readOnly = true)
+    public List<Jogo> listarTodos() {
+        // Simplesmente busca todos os jogos do repositório
+        return jogoRepository.findAll();
     }
 
 }

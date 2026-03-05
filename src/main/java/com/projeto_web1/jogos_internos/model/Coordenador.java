@@ -18,4 +18,6 @@ public class Coordenador {
     @MapsId
     @JoinColumn(name = "id_coordenador")
     private Usuario usuario;
+
+
 }

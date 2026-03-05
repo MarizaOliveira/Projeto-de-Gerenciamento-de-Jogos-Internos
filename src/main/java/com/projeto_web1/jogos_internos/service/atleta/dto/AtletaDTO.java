@@ -1,6 +1,9 @@
 package com.projeto_web1.jogos_internos.service.atleta.dto;
 
+import com.projeto_web1.jogos_internos.service.time.dto.EquipeDTO;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class AtletaDTO {
@@ -12,5 +15,9 @@ public class AtletaDTO {
     private String telefone;
     private String nomeCurso;
     private Boolean tecnicoHabilitado;
+
+    private Long idCurso;
+    private String nivelCurso;
+    private Set<EquipeDTO> equipes;
 
 }

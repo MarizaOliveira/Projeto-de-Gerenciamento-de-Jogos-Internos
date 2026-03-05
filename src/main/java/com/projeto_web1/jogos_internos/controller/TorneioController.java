@@ -1,7 +1,9 @@
 package com.projeto_web1.jogos_internos.controller;
 
 import com.projeto_web1.jogos_internos.service.torneio.TorneioService;
+import com.projeto_web1.jogos_internos.service.torneio.dto.GrupoDTO;
 import com.projeto_web1.jogos_internos.service.torneio.dto.TimeClassificacaoDTO;
+import com.projeto_web1.jogos_internos.service.torneio.impl.TorneioServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/torneios")
+@CrossOrigin(origins = "*")
 public class TorneioController {
 
     @Autowired
@@ -32,6 +35,15 @@ public class TorneioController {
     public ResponseEntity<List<TimeClassificacaoDTO>> getTabelaClassificacao(@PathVariable Long grupoId) {
         List<TimeClassificacaoDTO> tabela = tournamentService.getTabelaDeClassificacao(grupoId);
         return ResponseEntity.ok(tabela);
+    }
+
+    @GetMapping("/{eventoId}/esportes/{esporteId}/grupos")
+    public ResponseEntity<List<GrupoDTO>> listarGruposDoTorneio(
+            @PathVariable Long eventoId,
+            @PathVariable Long esporteId) {
+        // CORRIGIDO: Chamamos o método na instância 'torneioService'
+        List<GrupoDTO> grupos = tournamentService.listarGrupos(eventoId, esporteId);
+        return ResponseEntity.ok(grupos);
     }
 
     // Endpoint para gerar a primeira fase do mata-mata (quartas)
@@ -60,6 +72,7 @@ public class TorneioController {
         tournamentService.gerarFinal(eventoId, esporteId);
         return ResponseEntity.ok().build();
     }
+
 
 
 

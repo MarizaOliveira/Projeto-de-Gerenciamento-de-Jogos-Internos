@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/esportes")
+@CrossOrigin(origins = "*")
 public class EsporteController {
 
     @Autowired

@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,5 +124,75 @@ public class EquipeServiceImpl implements EquipeService {
     @Transactional(readOnly = true)
     public List<Equipe> listarTodas() {
         return equipeRepository.findAll();
+    }
+
+    // Quadro de código para adicionar ao EquipeServiceImpl.java
+
+
+    // Cole este código no lugar do seu método atualizar() existente
+
+    @Override
+    @Transactional
+    public EquipeDTO atualizar(Long id, EquipeForm form) {
+        // 1. Encontra a equipe existente no banco de dados
+        Equipe equipeExistente = equipeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Equipe não encontrada com o ID: " + id));
+
+        // 2. Busca as novas entidades relacionadas (exatamente como no método de criar)
+        Esporte esporte = esporteRepository.findById(form.getIdEsporte())
+                .orElseThrow(() -> new EntityNotFoundException("Esporte não encontrado."));
+        Curso cursoDoTecnico = cursoRepository.findById(form.getIdCurso())
+                .orElseThrow(() -> new EntityNotFoundException("Curso não encontrado."));
+        Atleta tecnico = atletaRepository.findById(form.getIdAtletaTecnico())
+                .orElseThrow(() -> new EntityNotFoundException("Atleta técnico não encontrado."));
+        Evento evento = eventoRepository.findById(form.getIdEvento())
+                .orElseThrow(() -> new EntityNotFoundException("Evento não encontrado."));
+
+        // 3. Re-aplica as mesmas validações do método de criar
+        if (!tecnico.getTecnicoHabilitado()) {
+            throw new IllegalArgumentException("Este atleta não está habilitado para ser técnico.");
+        }
+        if (form.getIdAtletas().size() < esporte.getMinAtletas() || form.getIdAtletas().size() > esporte.getMaxAtletas()) {
+            throw new IllegalArgumentException("Número de atletas inválido para o esporte " + esporte.getNome());
+        }
+        if (!form.getIdAtletas().contains(tecnico.getIdAtleta())) {
+            throw new IllegalArgumentException("O técnico deve estar incluído na lista de atletas da equipe.");
+        }
+
+        List<Atleta> novosAtletasDaEquipe = atletaRepository.findAllById(form.getIdAtletas());
+        for (Atleta atleta : novosAtletasDaEquipe) {
+            if (atleta.getCurso() == null || !atleta.getCurso().getIdCurso().equals(cursoDoTecnico.getIdCurso())) {
+                throw new IllegalStateException("O atleta " + atleta.getNomeCompleto() + " não pertence ao curso " + cursoDoTecnico.getNome() + " e não pode ser adicionado a esta equipe.");
+            }
+        }
+
+        // 4. Atualiza os campos da equipe existente
+        equipeExistente.setNome(form.getNome());
+        equipeExistente.setEsporte(esporte);
+        equipeExistente.setCurso(cursoDoTecnico);
+        equipeExistente.setEvento(evento);
+        equipeExistente.setAtletaTecnico(tecnico);
+
+        // Limpa a lista de atletas antiga e adiciona a nova
+        equipeExistente.getAtletas().clear();
+        equipeExistente.getAtletas().addAll(novosAtletasDaEquipe);
+
+        try {
+            Equipe equipeSalva = equipeRepository.save(equipeExistente);
+            // Reutiliza o DTO mapper para retornar a resposta
+            return mapToEquipeDTO(equipeSalva, novosAtletasDaEquipe);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Já existe uma equipe para este curso e esporte neste evento.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deletar(Long id) {
+        if (!equipeRepository.existsById(id)) {
+            throw new EntityNotFoundException("Equipa não encontrada com o ID: " + id);
+        }
+        // O Spring Data JPA lida com a remoção das associações na tabela 'equipe_atletas'
+        equipeRepository.deleteById(id);
     }
 }

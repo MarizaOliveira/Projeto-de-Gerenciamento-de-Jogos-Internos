@@ -36,6 +36,12 @@ public class CursoServiceImpl implements CursoService {
         return cursoRepository.save(curso);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Curso> listarPorCampus(Long idCampus) {
+        return cursoRepository.findByCampusIdCampus(idCampus);
+    }
+
     // READ (Listar todos)
     @Override
     @Transactional(readOnly = true)

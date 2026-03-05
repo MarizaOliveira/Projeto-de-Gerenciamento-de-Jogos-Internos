@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/eventos")
+@CrossOrigin(origins = "*")
 public class EventoController {
 
     @Autowired

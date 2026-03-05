@@ -11,4 +11,6 @@ public class UserDTO {
     private TipoUsuario tipoUsuario;
     private String nomeCompleto;
     private String apelido;
+
+    private Long idCurso;
 }

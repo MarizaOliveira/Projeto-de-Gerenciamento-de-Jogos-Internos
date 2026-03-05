@@ -17,4 +17,7 @@ public class EquipeDTO {
 
     // Lista de objetos com os dados de todos os atletas
     private List<UserDTO> atletas;
+
+    private Long idEvento;
+    private Long idEsporte;
 }
